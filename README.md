@@ -96,6 +96,19 @@ with.
 - Unsigned binary. Windows SmartScreen may warn on first run. Build it yourself if
   you'd rather not trust a prebuilt exe.
 
+## Antivirus
+
+Defender's behavior monitor may flag the exe (seen once as
+Behavior:Win32/DefenseEvasion.A!ml). It's a machine-learning heuristic, not a
+signature match: an unsigned exe with no reputation that writes files next to
+itself and starts another program (Reloaded-II, only when you press Apply & Run
+Game) looks suspicious to it. There is no networking, no code injection and no
+command execution beyond that one launch; the whole source is in this repo, so
+build it yourself if in doubt. If Defender quarantines the exe: Windows
+Security > Protection history > Allow, then re-extract the mod. False positives
+can be reported to Microsoft's file submission page, which usually clears the
+specific build.
+
 ## Build it yourself
 
 Install a [Rust toolchain](https://rustup.rs/) (built and tested with 1.96, MSVC

@@ -92,4 +92,14 @@ NOTES
   sit at 15 or below either way.
 - Solo / offline use only, like every table mod.
 
+ANTIVIRUS
+---------
+Defender's behavior monitor may flag the exe (Behavior:Win32/DefenseEvasion.A!ml
+or similar). That's a machine-learning false positive: an unsigned exe that
+writes its tables next to itself and starts Reloaded-II on request looks
+suspicious to it. Nothing here touches the network or other processes. If it
+gets quarantined: Windows Security > Protection history > Allow, then re-extract
+the mod. The full source is public - build the exe yourself if in doubt.
+
+
 Made for personal use. Values come straight from the game's own data files.
