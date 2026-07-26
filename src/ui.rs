@@ -2,7 +2,7 @@
 
 use eframe::egui;
 
-use crate::app::{first_free, sigil, sub_traits, App, Pick};
+use crate::app::{first_free, sigil, sub_name, sub_traits, App, Pick};
 use crate::data::{Kind, Subs, GROUPS, SIGILS, TRAIT_COUNT};
 use crate::patch::{pool_capacity, uncovered_lots};
 
@@ -13,6 +13,7 @@ const MUTED: egui::Color32 = egui::Color32::from_rgb(0x8b, 0x92, 0xa0);
 const CARD: egui::Color32 = egui::Color32::from_rgb(0x1e, 0x20, 0x2a);
 const LINE: egui::Color32 = egui::Color32::from_rgb(0x2d, 0x32, 0x41);
 const WARN: egui::Color32 = egui::Color32::from_rgb(0xd9, 0xb4, 0x6a);
+const RED: egui::Color32 = egui::Color32::from_rgb(0xe8, 0x92, 0x92);
 
 pub fn setup_style(ctx: &egui::Context) {
     use egui::{Color32, CornerRadius, Stroke};
@@ -194,13 +195,10 @@ fn summary(p: &Pick) -> String {
         Subs::None => format!("{}{}   (single trait)", name, lv),
         Subs::Strip => format!("{}{}   (leftover 2nd trait removed)", name, lv),
         Subs::Fixed(t) => format!("{}{}   +   {}{} (fixed)", name, lv, t, lv),
-        Subs::Lot(_) => {
-            let sub = sub_traits(s).and_then(|ts| p.sub.checked_sub(1).and_then(|i| ts.get(i).map(|t| t.0)));
-            match sub {
-                Some(t) => format!("{}{}   +   {}{}", name, lv, t, lv),
-                None => format!("{}{}   +   random 2nd trait", name, lv),
-            }
-        }
+        Subs::Lot(_) => match sub_name(p) {
+            Some(t) => format!("{}{}   +   {}{}", name, lv, t, lv),
+            None => format!("{}{}   +   random 2nd trait", name, lv),
+        },
     }
 }
 
@@ -247,7 +245,7 @@ impl eframe::App for App {
                 ui.collapsing("Requirement details", |ui| {
                     for (n, f) in &self.dep.items {
                         ui.horizontal(|ui| {
-                            let (c, m) = if *f { (Color32::from_rgb(0x7b, 0xd6, 0x9a), "installed") } else { (Color32::from_rgb(0xe8, 0x92, 0x92), "MISSING ") };
+                            let (c, m) = if *f { (Color32::from_rgb(0x7b, 0xd6, 0x9a), "installed") } else { (RED, "MISSING ") };
                             ui.label(RichText::new(m).color(c).strong());
                             ui.label(RichText::new(n).monospace().color(MUTED));
                         });
@@ -307,17 +305,17 @@ impl eframe::App for App {
                         27 => "Fatebreaker pool",
                         _ => "unknown pool",
                     }).collect();
-                    ui.label(RichText::new(format!("No allowed 2nd trait left for: {}. Allow at least one trait from each affected pool.", pools.join(", "))).color(Color32::from_rgb(0xe8, 0x92, 0x92)).size(12.5));
+                    ui.label(RichText::new(format!("No allowed 2nd trait left for: {}. Allow at least one trait from each affected pool.", pools.join(", "))).color(RED).size(12.5));
                     ui.add_space(8.0);
                 }
                 ui.label(RichText::new("Checked unique sigils that vanilla Transmarvel does not roll are added to its pool.").color(WARN).size(12.5));
                 ui.add_space(8.0);
                 if SIGILS.iter().enumerate().any(|(i, s)| s.once && self.pool[i]) {
-                    ui.label(RichText::new("Some checked sigils are one of a kind: rolls that land on one you already own give nothing, the Transmarvel is wasted.").color(Color32::from_rgb(0xe8, 0x92, 0x92)).size(12.5));
+                    ui.label(RichText::new("Some checked sigils are one of a kind: rolls that land on one you already own give nothing, the Transmarvel is wasted.").color(RED).size(12.5));
                     ui.add_space(8.0);
                 }
                 if SIGILS.iter().enumerate().any(|(i, s)| s.level > 15 && self.pool[i]) {
-                    ui.label(RichText::new("A checked pick grants above Lv15: you can't upgrade using azurite while this is on, and Sigil Synthesis can't grand succeed.").color(Color32::from_rgb(0xe8, 0x92, 0x92)).size(12.5));
+                    ui.label(RichText::new("A checked pick grants above Lv15: you can't upgrade using azurite while this is on, and Sigil Synthesis can't grand succeed.").color(RED).size(12.5));
                     ui.add_space(8.0);
                 }
             }
@@ -374,9 +372,7 @@ impl eframe::App for App {
                                     let ts = sub_traits(s).unwrap_or_default();
                                     let mut items: Vec<(usize, &str)> = vec![(0, "Random (rolls from its normal pool)")];
                                     items.extend(ts.iter().enumerate().map(|(k, t)| (k + 1, t.0)));
-                                    let label = p.sub.checked_sub(1)
-                                        .and_then(|k| ts.get(k)).map(|t| t.0)
-                                        .unwrap_or("Random (rolls from its normal pool)");
+                                    let label = sub_name(p).unwrap_or("Random (rolls from its normal pool)");
                                     searchable_combo(ui, ("sub", i), 340.0, &items, &mut p.sub, label);
                                     ui.end_row();
                                 }
@@ -420,15 +416,15 @@ impl eframe::App for App {
                     }
                     if sigil(p).once {
                         ui.add_space(2.0);
-                        ui.label(RichText::new("One of a kind: if you already own it, this roll gives nothing and the Transmarvel is wasted.").color(Color32::from_rgb(0xe8, 0x92, 0x92)).size(12.5));
+                        ui.label(RichText::new("One of a kind: if you already own it, this roll gives nothing and the Transmarvel is wasted.").color(RED).size(12.5));
                     }
                     if sigil(p).level > 15 {
                         ui.add_space(2.0);
-                        ui.label(RichText::new("You can't upgrade using azurite while this is on, and Sigil Synthesis can't grand succeed (results stay at the default level).").color(Color32::from_rgb(0xe8, 0x92, 0x92)).size(12.5));
+                        ui.label(RichText::new("You can't upgrade using azurite while this is on, and Sigil Synthesis can't grand succeed (results stay at the default level).").color(RED).size(12.5));
                     }
                     if let Some(w) = sigil(p).cheat {
                         ui.add_space(2.0);
-                        ui.label(RichText::new(w).color(Color32::from_rgb(0xe8, 0x92, 0x92)).size(12.5));
+                        ui.label(RichText::new(w).color(RED).size(12.5));
                     }
                 });
                 ui.add_space(8.0);

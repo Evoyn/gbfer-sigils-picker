@@ -51,6 +51,14 @@ fn strip_pin(s: &Sigil) -> Option<u32> {
     if s.subs == Subs::Strip { Some(NO_TRAIT) } else { None }
 }
 
+// display name of the pinned sub, none while random
+pub fn sub_name(p: &Pick) -> Option<&'static str> {
+    match (sigil(p).subs, p.sub) {
+        (Subs::Lot(groups), n) if n > 0 => flatten(groups).nth(n - 1).map(|t| t.0),
+        _ => None,
+    }
+}
+
 // one grant per gem key, first pick wins on dupes
 pub fn grants(picks: &[Pick]) -> Vec<Grant> {
     let mut out: Vec<Grant> = Vec::new();
@@ -59,8 +67,7 @@ pub fn grants(picks: &[Pick]) -> Vec<Grant> {
         if out.iter().any(|g| g.key == s.key) { continue }
         let pin = match (s.subs, p.sub) {
             (Subs::Lot(groups), n) if n > 0 => flatten(groups).nth(n - 1).map(|t| t.1),
-            (Subs::Strip, _) => Some(NO_TRAIT),
-            _ => None,
+            _ => strip_pin(s),
         };
         out.push(Grant { key: s.key, level: s.level, pin });
     }
@@ -140,13 +147,7 @@ impl App {
 
     pub fn save_config(&self) {
         let picks: Vec<serde_json::Value> = self.picks.iter().map(|p| {
-            let s = sigil(p);
-            let sub = match (s.subs, p.sub) {
-                (Subs::Lot(groups), n) if n > 0 =>
-                    flatten(groups).nth(n - 1).map(|t| t.0).unwrap_or("Random"),
-                _ => "Random",
-            };
-            serde_json::json!({ "sigil": s.name, "sub": sub })
+            serde_json::json!({ "sigil": sigil(p).name, "sub": sub_name(p).unwrap_or("Random") })
         }).collect();
         let gacha_pool: Vec<&str> = SIGILS.iter().enumerate()
             .filter(|(i, _)| self.pool[*i]).map(|(_, s)| s.name).collect();
@@ -168,22 +169,9 @@ impl App {
 
     pub fn apply(&mut self) -> std::io::Result<()> {
         let dir = self.exe_dir.join("GBFR").join("data").join("system").join("table");
-        fs::create_dir_all(&dir)?;
-        let g = self.active_grants();
-        // grants above 15 need the r5 cap raised, the locks come with it
-        let unlock = g.iter().any(|x| x.level > 15);
-        let (gl, grg) = build_gacha_tables(&g);
-        fs::write(dir.join("gacha_lot.tbl"), gl)?;
-        fs::write(dir.join("gacha_rate_group.tbl"), grg)?;
-        fs::write(dir.join("gem.tbl"), patched_gem(&g, unlock))?;
-        fs::write(dir.join("gacha.tbl"), patched_gacha(self.sigil_only))?;
         // trait filter only acts in gacha mode, exact picks write vanilla lots
         let ta = if self.gacha_mode { self.traits_allowed.clone() } else { vec![true; TRAIT_COUNT] };
-        let (sl, stl) = build_trait_tables(&ta);
-        fs::write(dir.join("skill_lot.tbl"), sl)?;
-        fs::write(dir.join("skill_type_lot.tbl"), stl)?;
-        fs::write(dir.join("gem_rare.tbl"), patched_gem_rare(unlock))?;
-        fs::write(dir.join("gem_mix_success.tbl"), patched_gem_mix_success(unlock))?;
+        write_tables(&dir, &self.active_grants(), self.sigil_only, &ta)?;
         self.save_config();
         Ok(())
     }
@@ -262,22 +250,29 @@ mod tests {
     }
 }
 
+// all eight tables in one pass, shared by apply and the self-install
+fn write_tables(dir: &Path, g: &[Grant], sigil_only: bool, traits_allowed: &[bool]) -> std::io::Result<()> {
+    fs::create_dir_all(dir)?;
+    // grants above 15 need the r5 cap raised, the locks come with it
+    let unlock = g.iter().any(|x| x.level > 15);
+    let (gl, grg) = build_gacha_tables(g);
+    fs::write(dir.join("gacha_lot.tbl"), gl)?;
+    fs::write(dir.join("gacha_rate_group.tbl"), grg)?;
+    fs::write(dir.join("gem.tbl"), patched_gem(g, unlock))?;
+    fs::write(dir.join("gacha.tbl"), patched_gacha(sigil_only))?;
+    let (sl, stl) = build_trait_tables(traits_allowed);
+    fs::write(dir.join("skill_lot.tbl"), sl)?;
+    fs::write(dir.join("skill_type_lot.tbl"), stl)?;
+    fs::write(dir.join("gem_rare.tbl"), patched_gem_rare(unlock))?;
+    fs::write(dir.join("gem_mix_success.tbl"), patched_gem_mix_success(unlock))
+}
+
 // run as a lone exe: write modconfig + default tables so reloaded-ii sees a mod
 fn ensure_installed(exe_dir: &Path, g: &[Grant], sigil_only: bool) {
     let mc = exe_dir.join("ModConfig.json");
     if !mc.exists() { let _ = fs::write(&mc, MODCONFIG_JSON); }
     let dir = exe_dir.join("GBFR").join("data").join("system").join("table");
-    if !dir.join("gacha_lot.tbl").exists() && fs::create_dir_all(&dir).is_ok() {
-        let unlock = g.iter().any(|x| x.level > 15);
-        let (gl, grg) = build_gacha_tables(g);
-        let _ = fs::write(dir.join("gacha_lot.tbl"), gl);
-        let _ = fs::write(dir.join("gacha_rate_group.tbl"), grg);
-        let _ = fs::write(dir.join("gem.tbl"), patched_gem(g, unlock));
-        let _ = fs::write(dir.join("gacha.tbl"), patched_gacha(sigil_only));
-        let (sl, stl) = build_trait_tables(&vec![true; TRAIT_COUNT]);
-        let _ = fs::write(dir.join("skill_lot.tbl"), sl);
-        let _ = fs::write(dir.join("skill_type_lot.tbl"), stl);
-        let _ = fs::write(dir.join("gem_rare.tbl"), patched_gem_rare(unlock));
-        let _ = fs::write(dir.join("gem_mix_success.tbl"), patched_gem_mix_success(unlock));
+    if !dir.join("gacha_lot.tbl").exists() {
+        let _ = write_tables(&dir, g, sigil_only, &vec![true; TRAIT_COUNT]);
     }
 }
