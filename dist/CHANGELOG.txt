@@ -1,0 +1,21 @@
+1.0.0
+- First release. Native GUI sigil picker for Transmarvel.
+- Three pools: unique sigils (War Elemental+, Untouchable+, Flight over Fight+,
+  Potent Greens+, Auto Potion+, Roll of the Die+, the echoes, Alpha+/Beta+/
+  Gamma+, the one-of-a-kind event sigils, Immortal Shell+ in two flavors),
+  character sigils (the three + sigils and the Awakening+ of all 28 characters)
+  and Transmarvel sigils (the 34 V+ sigils of the vanilla pool, Celestials,
+  Divergence and Fatebreaker included).
+- Exact picks split evenly (100% / n). Random 2nd traits can be pinned to any
+  trait from that sigil's own pool.
+- Prefer gacha mode: curate the pool with checklists instead of forcing picks,
+  plus a 2nd-trait filter where the allowed traits become equally likely.
+- Sigils only toggle (default on): Transmarvel never gives a wrightstone.
+- Immortal Shell+ grants at Lv20 by raising the rarity-5 level cap; azurite
+  upgrading for rarity-5 sigils and synthesis grand successes are disabled
+  while such a pick is applied, so nothing else can pass Lv15.
+- Warnings where they matter: red for one-of-a-kind sigils (rolling one you
+  already own gives nothing) and the cheat flavors, amber for sigils vanilla
+  Transmarvel cannot roll.
+- Type-to-filter search everywhere; self-installing single .exe; auto-detects
+  Reloaded-II and checks gbfrelink.utility.manager.

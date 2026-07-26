@@ -1,0 +1,18 @@
+[package]
+name = "gbfrer-sigilis-picker"
+version = "1.0.0"
+edition = "2024"
+
+[dependencies]
+eframe = { version = "0.35.0", default-features = false, features = ["glow", "default_fonts"] }
+rfd = "0.17.2"
+serde_json = "1.0.151"
+
+[build-dependencies]
+winresource = "0.1"
+
+[profile.release]
+# no strip/lto on purpose, stripped size-optimized exes look "packed" to AV heuristics
+strip = false
+lto = false
+opt-level = 3

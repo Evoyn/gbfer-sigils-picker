@@ -1,0 +1,19 @@
+{
+  "ModId": "gbfr.transmarvel_sigil_picker",
+  "ModName": "GBFRER Transmarvel Sigil Picker",
+  "ModAuthor": "Nebu",
+  "ModVersion": "1.0.0",
+  "ModDescription": "Pick which sigil(s) Transmarvel gives you. Unique sigils: War Elemental+, Untouchable+, Flight over Fight+, Potent Greens+, Auto Potion+, Roll of the Die+, the echo sigils, Alpha/Beta/Gamma+, the Celestials, Divergence, Fatebreaker, plus the one-of-a-kind event sigils (Immortal Shell, In a Pinch, Sumo Force, the crab set; the game blocks duplicates of most of these, the app warns you). Character sigils: the three + sigils and the Awakening+ of every character. Transmarvel sigils: the 26 standard V+ sigils of the vanilla pool. For sigils with a random 2nd trait you can pin the trait you want (always a natural roll for that sigil). With several picks set, Transmarvel splits evenly between them. Or turn on gacha mode: check every sigil you want in the pool and Transmarvel rolls randomly among them, 2nd traits stay random. Gacha mode can also exclude traits from the random 2nd-trait roll (this filter applies to every sigil that rolls a random 2nd trait, not only Transmarvel ones). By default it also skips wrightstones so every Transmarvel is a sigil (can be turned off in the GUI). Note: some unique picks (marked in the GUI) are real game sigils that the vanilla Transmarvel pool does not contain; this mod adds them to it. Set it up with the included GBFRER Sigil Picker.exe. See README.txt.",
+  "ModDll": "",
+  "ModIcon": "",
+  "IsLibrary": false,
+  "ReleaseMetadataFileName": "gbfr.transmarvel_sigil_picker.ReleaseMetadata.json",
+  "IgnoreRegexes": [ ".*\\.json" ],
+  "IncludeRegexes": [ "\\.deps\\.json", "\\.runtimeconfig\\.json", "ModConfig\\.json" ],
+  "PluginData": { "GitHubDependencies": { "IdToConfigMap": { "gbfrelink.utility.manager": { "Config": { "UserName": "WistfulHopes", "RepositoryName": "gbfrelink.utility.manager", "UseReleaseTag": true, "AssetFileName": "Mod.zip" }, "ReleaseMetadataName": "gbfrelink.utility.manager.ReleaseMetadata.json" } } } },
+  "IsUniversalMod": false,
+  "ModDependencies": [ "gbfrelink.utility.manager" ],
+  "OptionalDependencies": [],
+  "SupportedAppId": [ "granblue_fantasy_relink.exe", "granblue_fantasy_relink_endless_ragnarok_beta_test.exe", "granblue_fantasy_relink_endless_ragnarok_demo.exe" ],
+  "ProjectUrl": ""
+}
