@@ -129,6 +129,14 @@ pub enum Subs {
 // what the game's own single-trait gems carry in the 2nd slot
 pub const NO_TRAIT: u32 = 0x887AE0B0;
 
+// vanilla flags these cantsell; both are dupe-able grants here, so re-rolled
+// copies would be permanent junk. cleared unconditionally so copies stay
+// sellable even after the pick is removed
+pub const FORCE_SELLABLE: &[u32] = &[
+    0x66CB28BA, // GEEN_301_10 Immortal Shell+ (both variants)
+    0xF2C84D4F, // GEEN_103_04 Natural Defenses
+];
+
 pub struct Sigil {
     pub name: &'static str,
     // gem.tbl key == gacha_lot itemid hash

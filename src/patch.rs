@@ -3,7 +3,7 @@
 // else is zero-weighted. rate weight per pool = picks in it * 5000, one shared
 // lot weight, so n picks = exactly 1/n each.
 
-use crate::data::{GEM_POOLS, GEM_RATE_GROUP, GROUPS, GROUP_ALIASES, TRAIT_LOTS, TRANSMARVEL_GACHA};
+use crate::data::{FORCE_SELLABLE, GEM_POOLS, GEM_RATE_GROUP, GROUPS, GROUP_ALIASES, TRAIT_LOTS, TRANSMARVEL_GACHA};
 
 pub const BASE_GACHA: &[u8] = include_bytes!("../base/gacha.tbl");
 pub const BASE_GACHA_LOT: &[u8] = include_bytes!("../base/gacha_lot.tbl");
@@ -89,11 +89,10 @@ pub fn build_gacha_tables(grants: &[Grant]) -> (Vec<u8>, Vec<u8>) {
 pub fn patched_gem(grants: &[Grant], lock_overlevel: bool) -> Vec<u8> {
     let mut gem = BASE_GEM.to_vec();
     let n = row_count(&gem);
-    if lock_overlevel {
-        for r in 0..n {
-            let o = 8 + r * 64;
-            if u32le(&gem, o + 48) == 5 { gem[o + 60] = 0; }
-        }
+    for r in 0..n {
+        let o = 8 + r * 64;
+        if FORCE_SELLABLE.contains(&u32le(&gem, o + 8)) { gem[o + 57] = 0; }
+        if lock_overlevel && u32le(&gem, o + 48) == 5 { gem[o + 60] = 0; }
     }
     for g in grants {
         let Some(pin) = g.pin else { continue };
@@ -334,8 +333,8 @@ mod tests {
         let o = gem_row(&gem, war.key).unwrap();
         assert_eq!(u32le(&gem, o + 4), supp);              // SkillId2 = pinned trait
         assert_eq!(i32le(&gem, o + 36), -1);               // random lot disabled
-        // unpinned leaves the table untouched
-        assert_eq!(patched_gem(&[Grant { key: war.key, level: 15, pin: None }], false), BASE_GEM);
+        // unpinned adds nothing beyond the sell-fix baseline
+        assert_eq!(patched_gem(&[Grant { key: war.key, level: 15, pin: None }], false), patched_gem(&[], false));
     }
 
     #[test]
@@ -457,22 +456,41 @@ mod tests {
 
     #[test]
     fn overlevel_lockout() {
+        let base = patched_gem(&[], false);
         let locked = patched_gem(&[], true);
         let mut azurite = 0;
-        for r in 0..row_count(BASE_GEM) {
+        for r in 0..row_count(&base) {
             let o = 8 + r * 64;
-            if u32le(BASE_GEM, o + 48) == 5 {
+            if u32le(&base, o + 48) == 5 {
                 assert_eq!(locked[o + 60], 0); // azurite off on rarity 5
-                if BASE_GEM[o + 60] == 1 { azurite += 1; }
+                if base[o + 60] == 1 { azurite += 1; }
                 // only the azurite byte may differ on a rarity-5 row
-                assert_eq!(&locked[o..o + 60], &BASE_GEM[o..o + 60]);
-                assert_eq!(&locked[o + 61..o + 64], &BASE_GEM[o + 61..o + 64]);
+                assert_eq!(&locked[o..o + 60], &base[o..o + 60]);
+                assert_eq!(&locked[o + 61..o + 64], &base[o + 61..o + 64]);
             } else {
-                assert_eq!(&locked[o..o + 64], &BASE_GEM[o..o + 64]);
+                assert_eq!(&locked[o..o + 64], &base[o..o + 64]);
             }
         }
         assert_eq!(azurite, 533); // rarity-5 gems with azurite in the vanilla table
-        assert_eq!(patched_gem(&[], false), BASE_GEM);
+    }
+
+    #[test]
+    fn force_sellable_rows() {
+        let g = patched_gem(&[], false);
+        let mut hits = 0;
+        for r in 0..row_count(BASE_GEM) {
+            let o = 8 + r * 64;
+            if FORCE_SELLABLE.contains(&u32le(BASE_GEM, o + 8)) {
+                assert_eq!(BASE_GEM[o + 57], 1); // vanilla really marks them cantsell
+                assert_eq!(g[o + 57], 0);
+                assert_eq!(&g[o..o + 57], &BASE_GEM[o..o + 57]);
+                assert_eq!(&g[o + 58..o + 64], &BASE_GEM[o + 58..o + 64]);
+                hits += 1;
+            } else {
+                assert_eq!(&g[o..o + 64], &BASE_GEM[o..o + 64]);
+            }
+        }
+        assert_eq!(hits, FORCE_SELLABLE.len());
     }
 
     #[test]

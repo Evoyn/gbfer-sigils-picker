@@ -35,6 +35,10 @@ Unique sigils, the ones sigil synthesis can never create:
   Crabvestment Returns, which then runs at Lv20, past its natural Lv15 cap, a
   stat line vanilla never produces. Both are the same gem row, so only one can
   be picked at a time.
+- Immortal Shell+ and Natural Defenses are granted sellable. Vanilla flags both
+  as unsellable, and since duplicates of them are allowed here, re-rolled
+  copies would be permanent junk. The sell flag stays cleared even after the
+  pick is removed, so old copies can always be sold.
 
 Character sigils, four per character for all 28 characters: the three "+"
 sigils (each with a pinnable random 2nd trait) and the Awakening+ (fixed trait

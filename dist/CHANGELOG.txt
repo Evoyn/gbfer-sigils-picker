@@ -17,5 +17,7 @@
 - Warnings where they matter: red for one-of-a-kind sigils (rolling one you
   already own gives nothing) and the cheat flavors, amber for sigils vanilla
   Transmarvel cannot roll.
+- Immortal Shell+ and Natural Defenses are granted sellable: vanilla flags
+  them unsellable and re-rolled duplicates would be permanent junk.
 - Type-to-filter search everywhere; self-installing single .exe; auto-detects
   Reloaded-II and checks gbfrelink.utility.manager.

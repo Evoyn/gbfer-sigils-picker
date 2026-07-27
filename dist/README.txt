@@ -90,6 +90,8 @@ NOTES
   now always come at the default level), so nothing can reach Lv20 except the
   picked grant. Remove the pick and Apply to restore everything. Vanilla drops
   sit at 15 or below either way.
+- Immortal Shell+ and Natural Defenses are made sellable. Vanilla flags them
+  unsellable, and re-rolled duplicates would be stuck in the inventory forever.
 - Solo / offline use only, like every table mod.
 
 ANTIVIRUS
