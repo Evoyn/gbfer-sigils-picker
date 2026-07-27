@@ -54,9 +54,11 @@ specific trait. The pin list is always that sigil's own vanilla trait pool, so a
 pinned sigil is still a combination the game itself defines. With several picks
 set, Transmarvel splits evenly between them.
 
-Honesty note: everything in the unique pool is a real game sigil that vanilla
+Honesty note: most of the unique pool is real game sigils that vanilla
 Transmarvel never rolls; this mod adds them to its pool and the GUI marks them
-in amber. Character and Transmarvel sigils are all genuine vanilla rolls.
+in amber. War Elemental+, the echoes and Super Ultimate Perfect Dodge+ became
+genuine Transmarvel rolls with the DLC, so they carry no mark. Character and
+Transmarvel sigils are all genuine vanilla rolls.
 
 ## The Lv20 pick
 

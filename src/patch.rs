@@ -352,11 +352,18 @@ mod tests {
 
     #[test]
     fn native_flags_match_vanilla_pools() {
-        // sigils marked native must appear as vanilla Transmarvel lot entries, the rest must not
+        // native must match presence in the embedded 2.0.2 pools, except the
+        // four the dlc added to transmarvel after our base tables were dumped
+        const DLC_NATIVE: &[u32] = &[
+            0x2D85102A, // War Elemental+
+            0x99E8B892, // Berserker Echo+
+            0x4AE72C9E, // Spartan Echo+
+            0x113035D8, // Super Ultimate Perfect Dodge+
+        ];
         let rows = pool_rows(BASE_GACHA_LOT);
         for s in SIGILS {
             let present = rows.iter().any(|&o| u32le(BASE_GACHA_LOT, o + 12) == s.key);
-            assert_eq!(present, s.native, "{}", s.name);
+            assert_eq!(present || DLC_NATIVE.contains(&s.key), s.native, "{}", s.name);
         }
     }
 

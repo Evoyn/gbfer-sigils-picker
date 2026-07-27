@@ -156,7 +156,7 @@ pub struct Sigil {
 }
 
 pub const SIGILS: &[Sigil] = &[
-    Sigil { name: "War Elemental+",                 key: 0x2D85102A, level: 15, subs: Subs::Lot(LOT16), native: false, kind: Kind::Unique, once: false, cheat: None, gacha: true }, // GEEN_146_34
+    Sigil { name: "War Elemental+",                 key: 0x2D85102A, level: 15, subs: Subs::Lot(LOT16), native: true, kind: Kind::Unique, once: false, cheat: None, gacha: true }, // GEEN_146_34
     Sigil { name: "Untouchable+",                   key: 0x49EBEBEB, level: 15, subs: Subs::Lot(LOT16), native: false, kind: Kind::Unique, once: false, cheat: None, gacha: true },
     Sigil { name: "Flight over Fight+",             key: 0x8E20B20C, level: 15, subs: Subs::Lot(LOT16), native: false, kind: Kind::Unique, once: false, cheat: None, gacha: true },
     Sigil { name: "Potent Greens+",                 key: 0x9A60FBF0, level: 15, subs: Subs::Lot(LOT16), native: false, kind: Kind::Unique, once: false, cheat: None, gacha: true },
@@ -164,9 +164,9 @@ pub const SIGILS: &[Sigil] = &[
     Sigil { name: "Roll of the Die+",               key: 0x6DB307D5, level: 15, subs: Subs::Lot(LOT16), native: false, kind: Kind::Unique, once: false, cheat: None, gacha: true },
     Sigil { name: "Natural Defenses",               key: 0xF2C84D4F, level: 15, subs: Subs::None, native: false, kind: Kind::Unique, once: false, cheat: None, gacha: false }, // GEEN_103_04
     Sigil { name: "Stout Heart",                    key: 0xCB5F29C1, level: 15, subs: Subs::None, native: false, kind: Kind::Unique, once: false, cheat: None, gacha: false }, // GEEN_044_04
-    Sigil { name: "Berserker Echo+",                key: 0x99E8B892, level: 15, subs: Subs::Lot(LOT16), native: false, kind: Kind::Unique, once: false, cheat: None, gacha: true }, // GEEN_233_34
-    Sigil { name: "Spartan Echo+",                  key: 0x4AE72C9E, level: 15, subs: Subs::Lot(LOT16), native: false, kind: Kind::Unique, once: false, cheat: None, gacha: true }, // GEEN_234_34
-    Sigil { name: "Super Ultimate Perfect Dodge+",  key: 0x113035D8, level: 15, subs: Subs::Lot(LOT16), native: false, kind: Kind::Unique, once: false, cheat: None, gacha: true },
+    Sigil { name: "Berserker Echo+",                key: 0x99E8B892, level: 15, subs: Subs::Lot(LOT16), native: true, kind: Kind::Unique, once: false, cheat: None, gacha: true }, // GEEN_233_34
+    Sigil { name: "Spartan Echo+",                  key: 0x4AE72C9E, level: 15, subs: Subs::Lot(LOT16), native: true, kind: Kind::Unique, once: false, cheat: None, gacha: true }, // GEEN_234_34
+    Sigil { name: "Super Ultimate Perfect Dodge+",  key: 0x113035D8, level: 15, subs: Subs::Lot(LOT16), native: true, kind: Kind::Unique, once: false, cheat: None, gacha: true },
     Sigil { name: "Alpha+",                         key: 0x921D90D8, level: 15, subs: Subs::Fixed("DMG Cap"), native: false, kind: Kind::Unique, once: false, cheat: None, gacha: false }, // GEEN_160_04
     Sigil { name: "Beta+",                          key: 0xEE337FE3, level: 15, subs: Subs::Fixed("DMG Cap"), native: false, kind: Kind::Unique, once: false, cheat: None, gacha: false }, // GEEN_161_04
     Sigil { name: "Gamma+",                         key: 0x4438676E, level: 15, subs: Subs::Fixed("DMG Cap"), native: false, kind: Kind::Unique, once: false, cheat: None, gacha: false }, // GEEN_162_04

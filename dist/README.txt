@@ -51,10 +51,11 @@ By default the mod also makes Transmarvel give a SIGIL EVERY TIME (no wrightston
 Untick "Sigils only" to keep the vanilla 75% sigil / 25% wrightstone split. Lower
 Transmutation tiers are never touched.
 
-HONESTY NOTE: nothing in the unique pool is a roll vanilla Transmarvel gives
-(War Elemental+ and the echoes appear in vanilla only as close variants). They are
-real game sigils that this mod adds to the Transmarvel pool - the app marks them
-in amber. Character and Transmarvel sigils are all genuine vanilla rolls.
+HONESTY NOTE: most of the unique pool is real game sigils that vanilla Transmarvel
+never rolls; this mod adds them to its pool and the app marks them in amber.
+War Elemental+, the echoes and Super Ultimate Perfect Dodge+ became genuine
+Transmarvel rolls with the DLC, so they carry no mark. Character and Transmarvel
+sigils are all genuine vanilla rolls.
 
 
 HOW TO USE
